@@ -19,52 +19,53 @@ if (isset($_POST['submit'])) {
     $fn = $_FILES['rcpt_sign']['name'];
     move_uploaded_file($buf, __DIR__ .  "./Receipt_Sign/" . $fn);
     $sign_path = 'Receipt_sign/' . $fn;
-    //student details fetch -------------------------------
-    $sel = "SELECT * FROM student WHERE s_id='$sid'";
-    $res = $con->query($sel);
-    if ($res && $res->num_rows > 0) {
-    $row = $res->fetch_assoc();
-    // print_r($row); // debug ke liye
-    } else {
-        die("Student not found");
-    }
-    //-----------------------------------------------------
-    $months = ["jan" => "January", "feb" => "February", "mar" => "March", "apr" => "April","may" => "May","jun" => "June", "july" => "July", "aug" => "August", "sept" => "September",
-                            "oct" => "October", "nov" => "November", "december" => "December" ];
-    $month_full = $months[$month];       // "jan" => "January"
-    $add_month_full = $months[$add_month]; // "feb" => "February"
-
-    //------------------------------------------------------
     if ($add_amount > 0 && !empty($add_month)) {
         if ($month === $add_month) {
             // $upd = "UPDATE fees SET $month = '$amount' + '$add_amount' WHERE s_id='$fid'";
             // $con->query($upd);
-        } else {
-            // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
-            // $con->query($upd);
-            // $upadd = "UPDATE fees SET $add_month = '$add_amount' WHERE s_id = '$fid'";
-            // $con->query($upadd);
-        }
-    } else {
-        // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
-        // $con->query($upd);
-    }
-    
-                                    // echo "<pre>";
-                                    // print_r($_POST);
-                                    // print_r($_FILES);
-                                    // exit;
+            } else {
+                // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
+                // $con->query($upd);
+                // $upadd = "UPDATE fees SET $add_month = '$add_amount' WHERE s_id = '$fid'";
+                // $con->query($upadd);
+                }
+                } else {
+                    // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
+                    // $con->query($upd);
+                    }
+                    
+                    // echo "<pre>";
+                    // print_r($_POST);
+                    // print_r($_FILES);
+                    // exit;
+                    
+                //student details fetch -------------------------------
+                $sel = "SELECT * FROM student WHERE s_id='$sid'";
+                $res = $con->query($sel);
+                if ($res && $res->num_rows > 0) {
+                $row = $res->fetch_assoc();
+                // print_r($row); // debug ke liye
+                } else {
+                    die("Student not found");
+                }
+                //-----------------------------------------------------
+                $months = ["jan" => "January", "feb" => "February", "mar" => "March", "apr" => "April","may" => "May","jun" => "June", "july" => "July", "aug" => "August", "sept" => "September",
+                                        "oct" => "October", "nov" => "November", "december" => "December" ];
+                $month_full = $months[$month];       // "jan" => "January"
+                $add_month_full = $months[$add_month]; // "feb" => "February"
+                
+                //------------------------------------------------------
 
-    // if ($con->query($upd)) {
-    
-        require "./fpdf/fpdf.php";
-
-        class PDF_Rotate extends FPDF
-        {
-            var $angle = 0;
-
-            function Rotate($angle, $x = -1, $y = -1)
-            {
+                    // if ($con->query($upd)) {
+                        
+                    require "./fpdf/fpdf.php";
+                    
+                    class PDF_Rotate extends FPDF
+                    {
+                        var $angle = 0;
+                        
+                        function Rotate($angle, $x = -1, $y = -1)
+                        {
                 if ($x == -1)
                     $x = $this->x;
                 if ($y == -1)
