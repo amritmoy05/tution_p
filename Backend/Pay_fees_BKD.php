@@ -14,58 +14,66 @@ if (isset($_POST['submit'])) {
     $add_month = $_POST['add_month'];
     $add_amount = $_POST['add_amount'];
     $pay_date = $_POST['p_date'];
-
-    $buf = $_FILES['rcpt_sign']['tmp_name'];
-    $fn = $_FILES['rcpt_sign']['name'];
+    $buf = $_FILES['rcpt_sign_new']['tmp_name'];
+    $fn = $_FILES['rcpt_sign_new']['name'];
     move_uploaded_file($buf, __DIR__ .  "./Receipt_Sign/" . $fn);
     $sign_path = 'Receipt_sign/' . $fn;
+
+    //student and receipt details fetch -------------------------------
+    $sel1 = "SELECT * FROM student WHERE s_id='$sid'"; // student table sel query
+    $sel2 = "SELECT rcpt_id,rcpt_no FROM receipt"; // receipt table sel query
+    $res = $con->query($sel1); 
+    $res2 = $con->query($sel2);
+    if ($res && $res2 && $res->num_rows > 0  ) {
+    $row = $res->fetch_assoc();   // student table data 
+    $row2 = $res2->fetch_assoc(); // receipt table data
+    $rcpt_si_no = $row2['rcpt_no']+1; 
+    $con->query("UPDATE receipt SET rcpt_no  = $rcpt_si_no");
+    // print_r($row); // debug ke liye
+    // print_r($row2); // debug ke liye
+    } else {
+        die("Student not found");
+    }
+    
+
+    $months = ["jan" => "January", "feb" => "February", "mar" => "March", "apr" => "April","may" => "May","jun" => "June", "july" => "July", "aug" => "August", "sept" => "September",
+                            "oct" => "October", "nov" => "November", "december" => "December" ];
+    $month_full = $months[$month];       // "jan" => "January"
+  
+    //------------------------------------------------------
+
     if ($add_amount > 0 && !empty($add_month)) {
         if ($month === $add_month) {
             // $upd = "UPDATE fees SET $month = '$amount' + '$add_amount' WHERE s_id='$fid'";
             // $con->query($upd);
-            } else {
-                // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
-                // $con->query($upd);
-                // $upadd = "UPDATE fees SET $add_month = '$add_amount' WHERE s_id = '$fid'";
-                // $con->query($upadd);
-                }
-                } else {
-                    // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
-                    // $con->query($upd);
-                    }
-                    
-                    // echo "<pre>";
-                    // print_r($_POST);
-                    // print_r($_FILES);
-                    // exit;
-                    
-                //student details fetch -------------------------------
-                $sel = "SELECT * FROM student WHERE s_id='$sid'";
-                $res = $con->query($sel);
-                if ($res && $res->num_rows > 0) {
-                $row = $res->fetch_assoc();
-                // print_r($row); // debug ke liye
-                } else {
-                    die("Student not found");
-                }
-                //-----------------------------------------------------
-                $months = ["jan" => "January", "feb" => "February", "mar" => "March", "apr" => "April","may" => "May","jun" => "June", "july" => "July", "aug" => "August", "sept" => "September",
-                                        "oct" => "October", "nov" => "November", "december" => "December" ];
-                $month_full = $months[$month];       // "jan" => "January"
-                $add_month_full = $months[$add_month]; // "feb" => "February"
-                
-                //------------------------------------------------------
+            $add_month_full = $months[$add_month]; // "feb" => "February"
+        } else {
+            // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
+            // $con->query($upd);
+            // $upadd = "UPDATE fees SET $add_month = '$add_amount' WHERE s_id = '$fid'";
+            // $con->query($upadd);
+            $add_month_full = $months[$add_month]; // "feb" => "February"
+        }
+    } else {
+        // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
+        // $con->query($upd);
+    }
+    
+                                    // echo "<pre>";
+                                    // print_r($_POST);
+                                    // print_r($_FILES);
+                                    // exit;
 
-                    // if ($con->query($upd)) {
-                        
-                    require "./fpdf/fpdf.php";
-                    
-                    class PDF_Rotate extends FPDF
-                    {
-                        var $angle = 0;
-                        
-                        function Rotate($angle, $x = -1, $y = -1)
-                        {
+    // if ($con->query($upd)) {
+    
+        require "./fpdf/fpdf.php";
+
+        class PDF_Rotate extends FPDF
+        {
+            var $angle = 0;
+
+            function Rotate($angle, $x = -1, $y = -1)
+            {
                 if ($x == -1)
                     $x = $this->x;
                 if ($y == -1)
@@ -106,7 +114,7 @@ if (isset($_POST['submit'])) {
         $pdf->SetFont('Arial', 'B', 14);
 
         $pdf->SetFont('Arial', '', '12');
-        $pdf->Cell(100, 10, 'SI No.: 01', 0, 0, 'L');
+        $pdf->Cell(100, 10, 'SI No.: '.$rcpt_si_no, 0, 0, 'L');
         $pdf->Cell(90, 10, 'Date : '.date("d-m-Y", strtotime($pay_date)), 0, 1, 'R');
 
         $pdf->Ln(8);
@@ -130,7 +138,14 @@ if (isset($_POST['submit'])) {
 
         $pdf->SetFont('Arial', '', '13');
         $pdf->Cell(130, 10, 'Name : '.$row['name'], 0, 1, 'L');
-        $pdf->Image("../student_img/".$row['image'], 148, 82, 25, 30); // Student image 
+        if(!empty($row['image'])){
+            $pdf->Image("../student_img/".$row['image'], 148, 82, 25, 30); // Student image
+        }else{
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Text(150, 97, 'Image not found');
+        }
+        $pdf->Rect(147, 81, 27, 32); // Rectangel 
+        $pdf->SetFont('Arial', '', '13');
         $pdf->Cell(95, 10, ''.$row['class'], 0, 1, 'L');
         $pdf->Cell(120, 10, 'Guardian Name : '.$row['g_name'], 0, 1, 'L');
         $pdf->Cell(190, 10, 'Mobile No. : '.$row['mobile_no'], 0, 1, 'L');
@@ -143,8 +158,8 @@ if (isset($_POST['submit'])) {
         $pdf->Ln(5);
 
         $pdf->SetFont('Arial', '', '13');
+        $pdf->Cell(130, 10, 'Payment ID: '.$row2['rcpt_id'], 0, 1, 'L');
         if(!empty($add_month) && $add_amount > 0){
-            $pdf->Cell(130, 10, 'Payment ID: 01', 0, 1, 'L');
             $pdf->Cell(130, 10, 'Paid Month : '.$month_full, 0, 0, 'L');
             $pdf->Cell(95, 10, 'Amount : '.$add_amount , 0, 1, 'L');
             $pdf->Cell(130, 10, 'Additional Month : '.$add_month_full, 0, 0, 'L');
@@ -154,7 +169,6 @@ if (isset($_POST['submit'])) {
             $totalamount = (int)$add_amount + (int)$amount;
             $pdf->Cell(163, 10, 'Total Paid Amount : '.$totalamount, 0, 1, 'R');
         }else{
-            $pdf->Cell(130, 10, 'Payment ID: 01', 0, 1, 'L');
             $pdf->Cell(130, 10, 'Paid Month : '.$month_full, 0, 0, 'L');
             $pdf->Cell(95, 10, 'Amount : '.$amount, 0, 1, 'L');
             $pdf->SetFont('Arial', 'B', 14);

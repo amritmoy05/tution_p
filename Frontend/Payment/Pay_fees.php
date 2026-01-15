@@ -147,7 +147,7 @@ if ($res && $res->num_rows > 0) {
 
                 <div class="mb-3 mt-4">
                     <h5>Upload your signature :</h5>
-                    <input type="file" name="rcpt_sign" id="" class="form-control w-50">
+                    <input type="file" name="rcpt_sign_new" id="" class="form-control w-50">
                 </div>
 
                 <div class="mb-3 mt-4" style="text-align: right;">
