@@ -1,0 +1,24 @@
+.container-bg{
+    padding-left: 100px;
+    padding-right: 100px;
+}
+.nav-container{
+    background-color: rgb(233, 239, 240);
+    border-radius: 8px;
+}
+.nav-link.home-link{
+    font-size: 1.7rem;
+}
+.nav-link{
+    font-size: 1.1rem;
+}
+.nav-link.bg-hover{
+    transition: .3s;
+}
+.nav-link.bg-hover:hover{
+    text-shadow: 0 0 10px rgb(115, 192, 236), 0 0 30px rgb(51, 125, 230);
+    padding: 8px;
+    border-radius: 10px;
+    max-width: 180px;
+    box-shadow: 0 0 10px hsla(199, 100%, 50%, 0.507);
+}
