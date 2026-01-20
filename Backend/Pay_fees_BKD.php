@@ -18,10 +18,11 @@ if (isset($_POST['submit'])) {
     $fn = $_FILES['rcpt_sign_new']['name'];
     move_uploaded_file($buf, __DIR__ .  "./Receipt_Sign/" . $fn);
     $sign_path = 'Receipt_sign/' . $fn;
-
+    $payment_id = 'P' . rand(1000, 9999);
+    
     //student and receipt details fetch -------------------------------
     $sel1 = "SELECT * FROM student WHERE s_id='$sid'"; // student table sel query
-    $sel2 = "SELECT rcpt_id,rcpt_no FROM receipt"; // receipt table sel query
+    $sel2 = "SELECT rcpt_id,rcpt_no FROM receipt WHERE s_id = '$sid'"; // receipt table sel query   
     $res = $con->query($sel1); 
     $res2 = $con->query($sel2);
     if ($res && $res2 && $res->num_rows > 0  ) {
@@ -39,24 +40,26 @@ if (isset($_POST['submit'])) {
     $months = ["jan" => "January", "feb" => "February", "mar" => "March", "apr" => "April","may" => "May","jun" => "June", "july" => "July", "aug" => "August", "sept" => "September",
                             "oct" => "October", "nov" => "November", "december" => "December" ];
     $month_full = $months[$month];       // "jan" => "January"
-  
+    
+    
+
     //------------------------------------------------------
 
     if ($add_amount > 0 && !empty($add_month)) {
         if ($month === $add_month) {
-            // $upd = "UPDATE fees SET $month = '$amount' + '$add_amount' WHERE s_id='$fid'";
-            // $con->query($upd);
+            $upd = "UPDATE fees SET $month = '$amount' + '$add_amount' WHERE s_id='$fid'";
+            $con->query($upd);
             $add_month_full = $months[$add_month]; // "feb" => "February"
         } else {
-            // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
-            // $con->query($upd);
-            // $upadd = "UPDATE fees SET $add_month = '$add_amount' WHERE s_id = '$fid'";
-            // $con->query($upadd);
+            $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
+            $con->query($upd);
+            $upadd = "UPDATE fees SET $add_month = '$add_amount' WHERE s_id = '$fid'";
+            $con->query($upadd);
             $add_month_full = $months[$add_month]; // "feb" => "February"
         }
     } else {
-        // $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
-        // $con->query($upd);
+        $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
+        $con->query($upd);
     }
     
                                     // echo "<pre>";
@@ -64,7 +67,7 @@ if (isset($_POST['submit'])) {
                                     // print_r($_FILES);
                                     // exit;
 
-    // if ($con->query($upd)) {
+    if ($con->query($upd)) {
     
         require "./fpdf/fpdf.php";
 
@@ -158,7 +161,7 @@ if (isset($_POST['submit'])) {
         $pdf->Ln(5);
 
         $pdf->SetFont('Arial', '', '13');
-        $pdf->Cell(130, 10, 'Payment ID: '.$row2['rcpt_id'], 0, 1, 'L');
+        $pdf->Cell(130, 10, 'Payment ID: '.$payment_id, 0, 1, 'L');
         if(!empty($add_month) && $add_amount > 0){
             $pdf->Cell(130, 10, 'Paid Month : '.$month_full, 0, 0, 'L');
             $pdf->Cell(95, 10, 'Amount : '.$add_amount , 0, 1, 'L');
@@ -192,13 +195,40 @@ if (isset($_POST['submit'])) {
         date_default_timezone_set("Asia/Kolkata");
         $pdf->RotatedText(78, 290, 'Bill generated on : ' . date("d-m-Y / h:i A"), 0);
 
+        // --------- Receipt Save Settings ----------
+        $student_name = preg_replace('/[^A-Za-z0-9 ]/', '', $row['name']); // safe filename
+        $receipt_filename = $month_full . " Receipt_".$student_name.".pdf";
+
+        $receipt_dir = __DIR__ . "/../Receipt_BKD/";
+            if (!is_dir($receipt_dir)) {
+                mkdir($receipt_dir, 0777, true);
+        }
+
+        $receipt_path = $receipt_dir.$receipt_filename;
+        $db_receipt_path = "Receipt_BKD/".$receipt_filename;
+
+        // PDF ko folder me save karo
+        $pdf->Output('F', $receipt_path);
+
+        // Database me receipt ka record save karo
+        $upd_rcpt = "UPDATE receipt SET $month = '$db_receipt_path' WHERE s_id = '$sid'";
+        $con->query($upd_rcpt);
+
+        // Uploaded sign delete
+        if (!empty($fn) && file_exists($sign_path)) {
+            unlink($sign_path);
+        }
+
+        // Optional: browser me bhi open karna ho to
+        $pdf->Output('I', $receipt_filename);
+
 
 
 
         $pdf->Output();
 
 
-// }
+}
 
 }
 

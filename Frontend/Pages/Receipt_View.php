@@ -14,7 +14,7 @@ if (!defined('ALLOWED_ACCESS')) {
     <title>Quick_Pay</title>
     <script src="/local-asset/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="/local-asset/bootstrap.min.css">
-    <link rel="stylesheet" href="Frontend/css/Receipt_View.css">
+    <link rel="stylesheet" href="/tution_p/Frontend/css/Receipt_View.css">
 </head>
 
 <body>
@@ -24,6 +24,7 @@ if (!defined('ALLOWED_ACCESS')) {
         $nav->showNavbar();
         ?>
         <h2>This is the Receipt View page</h2>
+        
     </div>
 </body>
 
