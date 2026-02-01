@@ -40,8 +40,6 @@ if (!defined('ALLOWED_ACCESS')) {
                     <th>Oct</th>
                     <th>Nov</th>
                     <th>Dec</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>

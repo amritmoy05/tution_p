@@ -12,20 +12,18 @@ class navbar
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a href="/tution_p/student" class="nav-link bg-hover ">Student</a>
+                    <a href="/tution_p/admission" class="nav-link bg-hover">Admission</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/tution_p/admission" class="nav-link bg-hover">Admission</a>
+                    <a href="/tution_p/student" class="nav-link bg-hover ">Student</a>
                 </li>
                 <li class="nav-item">
                     <a href="/tution_p/payment" class="nav-link bg-hover">Payment</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/tution_p/quick_pay" class="nav-link bg-hover">Quick Pay</a>
-                </li>
-                <li class="nav-item">
                     <a href="/tution_p/receipt" class="nav-link bg-hover me-2">Receipt</a>
                 </li>
+            </ul>
         </div>
         <?php
     }
