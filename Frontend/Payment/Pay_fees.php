@@ -82,7 +82,7 @@ if ($res && $res->num_rows > 0) {
 
                 <div class="mb-3 mt-4">
                     <h4>Payment For :</h4>
-                    <select name="month" id="month" class="form-select w-50" required>
+                    <select name="month" id="month" class="form-select w-50">
                         <option value="">-Select Month-</option>
                         <?php
                         // Month array banaya
@@ -114,12 +114,33 @@ if ($res && $res->num_rows > 0) {
                 <!-- Hidden Section (show only if checkbox checked) -->
 
                 <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="preDue" onclick = "togglePre()" >
+                    <label class="form-check-label" for="preDue">
+                        Previous year due
+                    </label>
+                </div>
+                <!-- -->
+                <div id="predueSection" style="display:none;">
+                    <div class="mb-3">
+                        <h5>Enter Additional Amount :</h5>
+                        <input type="number" name="pre_due" class="form-control w-75">
+                    </div>
+                </div>
+                <!-- -->
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="" onclick = "" >
+                    <label class="form-check-label" for="preDue">
+                        Previous year due Only
+                    </label>
+                </div>
+
+                <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="addMore" onclick = "toggleExtra()" >
                     <label class="form-check-label" for="addMore">
                         Add Additional Month Payment
                     </label>
                 </div>
-
                 <!-- Hidden Section (show only if checkbox checked) -->
                 <div id="extraSection" style="display:none;">
                     <div class="mb-3">

@@ -11,6 +11,7 @@ if (isset($_POST['submit'])) {
     $fid = $_POST['fid'];
     $month = $_POST['month'];
     $amount = $_POST['amount'];
+    $pre_due = $_POST['pre_due']; //  previous due
     $add_month = $_POST['add_month'];
     $add_amount = $_POST['add_amount'];
     $pay_date = $_POST['p_date'];
@@ -188,7 +189,7 @@ if (isset($_POST['submit'])) {
         if (!empty($fn) && file_exists($sign_path)){
             $pdf->Image("$sign_path", 144, 235, 55, 14); // rcpt sign
         }else{
-             $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetFont('Arial', 'I', 8);
             $pdf->Text(150, 245, 'Signature not available');
         }
         $pdf->SetFont('Arial', '', 10);
