@@ -7,11 +7,11 @@ if (isset($_GET['fid']) && isset($_GET['sid'])) {
     // dynamic url generate 
     $from = $_GET['from'] ?? 'student';
     if ($from === 'payment') {
-    $backUrl  = '/tution_p/payment';
-    $backText = 'Back to Payment';
+        $backUrl = '/tution_p/payment';
+        $backText = 'Back to Payment';
     } else {
-    $backUrl  = '/tution_p/student';
-    $backText = 'Back to Students';
+        $backUrl = '/tution_p/student';
+        $backText = 'Back to Students';
     }
     // dynamic url generate 
 
@@ -24,18 +24,18 @@ if (isset($_GET['fid']) && isset($_GET['sid'])) {
             WHERE s.s_id = '$sid'
             ORDER BY s.s_id ASC";
 
-   $res = $con->query($sel);
+    $res = $con->query($sel);
 
-if ($res && $res->num_rows > 0) {
-    $row = $res->fetch_assoc();
-} else {
-    echo "No student found";
-    exit;
-}
+    if ($res && $res->num_rows > 0) {
+        $row = $res->fetch_assoc();
+    } else {
+        echo "No student found";
+        exit;
+    }
     // print_r($row);
 }
 ?>
- <!-- html start -->
+<!-- html start -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,14 +46,17 @@ if ($res && $res->num_rows > 0) {
     <link rel="stylesheet" href="/local-asset/bootstrap.min.css">
     <link rel="stylesheet" href="Frontend/css/Pay_fees.css">
 </head>
+
 <body>
     <div class="container-bg mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-1 mt-5">
-                <u><h3>Student Payment Details Check</h3></u>
-                <!-- <a href="../tution_p/student" class="btn btn-sm btn-outline-secondary">Back to Students</a> -->
-                 <a href="<?= $backUrl ?>" class="btn btn-sm btn-outline-secondary"> <?= $backText ?> </a>
+        <div class="d-flex justify-content-between align-items-center mb-1 mt-5">
+            <u>
+                <h3>Student Payment Details Check</h3>
+            </u>
+            <!-- <a href="../tution_p/student" class="btn btn-sm btn-outline-secondary">Back to Students</a> -->
+            <a href="<?= $backUrl ?>" class="btn btn-sm btn-outline-secondary"> <?= $backText ?> </a>
 
-            </div>
+        </div>
 
         <div class="container border border-2 border-blue rounded p-4 custom-bg mt-4" style="width: 750px;">
 
@@ -67,7 +70,8 @@ if ($res && $res->num_rows > 0) {
                     <h3>Student Name : <u><?= $row['name'] ?></u></h3>
                     <!-- Old image preview -->
                     <?php if (!empty($row['image'])) { ?>
-                        <img src="../tution_p/student_img/<?= $row['image'] ?>" alt="profile" height="100px" width="100px"><br>
+                        <img src="../tution_p/student_img/<?= $row['image'] ?>" alt="profile" height="100px"
+                            width="100px"><br>
                     <?php } ?>
                 </div>
 
@@ -80,63 +84,63 @@ if ($res && $res->num_rows > 0) {
                     <input type="date" name="p_date" id="" class="form-control w-50" required>
                 </div>
 
-                <div class="mb-3 mt-4">
-                    <h4>Payment For :</h4>
-                    <select name="month" id="month" class="form-select w-50">
-                        <option value="">-Select Month-</option>
-                        <?php
-                        // Month array banaya
-                        $months = [
-                            "jan" => "January",
-                            "feb" => "February",
-                            "mar" => "March",
-                            "apr" => "April",
-                            "may" => "May",
-                            "jun" => "June",
-                            "july" => "July",
-                            "aug" => "August",
-                            "sept" => "September",
-                            "oct" => "October",
-                            "nov" => "November",
-                            "december" => "December"
-                        ];
+                <div class="mb-3 mt-4" id="OnlyPayment" style="">
+                    <div class="mb-3">
+                        <h4>Payment For :</h4>
+                        <select name="month" id="month" class="form-select w-50">
+                            <option value="">-Select Month-</option>
+                            <?php
+                            // Month array banaya
+                            $months = [
+                                "jan" => "January",
+                                "feb" => "February",
+                                "mar" => "March",
+                                "apr" => "April",
+                                "may" => "May",
+                                "jun" => "June",
+                                "july" => "July",
+                                "aug" => "August",
+                                "sept" => "September",
+                                "oct" => "October",
+                                "nov" => "November",
+                                "december" => "December"
+                            ];
 
-                        // Loop through months
-                        foreach ($months as $col => $monthName) {
-                            if (isset($row[$col]) && $row[$col] == 0) {   // only unpaid months
-                                echo "<option value='$col'>$monthName</option>";
+                            // Loop through months
+                            foreach ($months as $col => $monthName) {
+                                if (isset($row[$col]) && $row[$col] == 0 || $row[$col] < 300) {   // only unpaid months
+                                    echo "<option value='$col'>$monthName</option>";
+                                }
                             }
-                        }
-                        ?>
-                    </select>
+                            ?>
+                        </select>
+                    </div>
+                    <div class="mb-3 mt-4 w-25">
+                        <h4>Enter Amount:</h4>
+                        <input type="number" name="amount" id="" class="form-control">
+                    </div>
                 </div>
-
+                <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
                 <!-- Hidden Section (show only if checkbox checked) -->
 
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="preDue" onclick = "togglePre()" >
+                    <input class="form-check-input" type="checkbox" id="preDue" onclick="togglePre()">
                     <label class="form-check-label" for="preDue">
-                        Previous year due
+                        Previous year Due only
                     </label>
                 </div>
-                <!-- -->
+                <!-- Previous year due only -->
                 <div id="predueSection" style="display:none;">
                     <div class="mb-3">
-                        <h5>Enter Additional Amount :</h5>
-                        <input type="number" name="pre_due" class="form-control w-75">
+                        <h5>Enter Previous year Amount :</h5>
+                        <input type="number" name="PreYearAmount" class="form-control w-75">
                     </div>
                 </div>
-                <!-- -->
-                
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="" onclick = "" >
-                    <label class="form-check-label" for="preDue">
-                        Previous year due Only
-                    </label>
-                </div>
+                <!-- Previous year due only -->
+
 
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="addMore" onclick = "toggleExtra()" >
+                    <input class="form-check-input" type="checkbox" id="addMore" onclick="toggleExtra()">
                     <label class="form-check-label" for="addMore">
                         Add Additional Month Payment
                     </label>
@@ -153,18 +157,14 @@ if ($res && $res->num_rows > 0) {
                             }
                             ?>
                         </select>
-                    </div>  
+                    </div>
 
                     <div class="mb-3">
                         <h5>Enter Additional Amount :</h5>
                         <input type="number" name="add_amount" class="form-control w-75">
                     </div>
-                </div>     <!-- Hidden Section (show only if checkbox checked) -->
-
-                <div class="mb-3 mt-4 w-25">
-                    <h4>Enter Amount:</h4>
-                    <input type="number" name="amount" id="" class="form-control" required>
-                </div>
+                </div> <!-- Hidden Section (show only if checkbox checked) -->
+                <!-- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
 
                 <div class="mb-3 mt-4">
                     <h5>Upload your signature :</h5>
@@ -179,7 +179,8 @@ if ($res && $res->num_rows > 0) {
         </div>
     </div>
 </body>
- <!-- js for Additional month show and hide  -->
-    <script src="./Frontend/Payment/Pay_fees.js">
-    </script>
+<!-- js for Additional month show and hide  -->
+<script src="./Frontend/Payment/Pay_fees.js">
+</script>
+
 </html>

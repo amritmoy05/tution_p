@@ -9,40 +9,64 @@ include "DB.php";
 if (isset($_POST['submit'])) {
     $sid = $_POST['sid'];
     $fid = $_POST['fid'];
-    $month = $_POST['month'];
+    $month = $_POST['month'] ?? '';
     $amount = $_POST['amount'];
-    $pre_due = $_POST['pre_due']; //  previous due
-    $add_month = $_POST['add_month'];
+    $pre_due = $_POST['PreYearAmount'] ?? 0; //  previous due
+    $add_month = $_POST['add_month'] ?? '';
     $add_amount = $_POST['add_amount'];
     $pay_date = $_POST['p_date'];
     $buf = $_FILES['rcpt_sign_new']['tmp_name'];
     $fn = $_FILES['rcpt_sign_new']['name'];
-    move_uploaded_file($buf, __DIR__ .  "./Receipt_Sign/" . $fn);
+    move_uploaded_file($buf, __DIR__ . "./Receipt_Sign/" . $fn);
     $sign_path = 'Receipt_sign/' . $fn;
     $payment_id = 'P' . rand(1000, 9999);
-    
+
     //student and receipt details fetch -------------------------------
     $sel1 = "SELECT * FROM student WHERE s_id='$sid'"; // student table sel query
     $sel2 = "SELECT rcpt_id,rcpt_no FROM receipt WHERE s_id = '$sid'"; // receipt table sel query   
-    $res = $con->query($sel1); 
+    $res = $con->query($sel1);
     $res2 = $con->query($sel2);
-    if ($res && $res2 && $res->num_rows > 0  ) {
-    $row = $res->fetch_assoc();   // student table data 
-    $row2 = $res2->fetch_assoc(); // receipt table data
-    $rcpt_si_no = $row2['rcpt_no']+1; 
-    $con->query("UPDATE receipt SET rcpt_no  = $rcpt_si_no");
-    // print_r($row); // debug ke liye
-    // print_r($row2); // debug ke liye
+    if ($res && $res2 && $res->num_rows > 0) {
+        $row = $res->fetch_assoc();   // student table data 
+        $row2 = $res2->fetch_assoc(); // receipt table data
+        $rcpt_si_no = $row2['rcpt_no'] + 1;
+        $con->query("UPDATE receipt SET rcpt_no  = $rcpt_si_no");
+        // print_r($row); // debug ke liye
+        // print_r($row2); // debug ke liye
     } else {
         die("Student not found");
     }
-    
 
-    $months = ["jan" => "January", "feb" => "February", "mar" => "March", "apr" => "April","may" => "May","jun" => "June", "july" => "July", "aug" => "August", "sept" => "September",
-                            "oct" => "October", "nov" => "November", "december" => "December" ];
-    $month_full = $months[$month];       // "jan" => "January"
-    
-    
+    $month_full = '';
+    $add_month_full = '';
+
+    $months = [
+        "jan" => "January",
+        "feb" => "February",
+        "mar" => "March",
+        "apr" => "April",
+        "may" => "May",
+        "jun" => "June",
+        "july" => "July",
+        "aug" => "August",
+        "sept" => "September",
+        "oct" => "October",
+        "nov" => "November",
+        "december" => "December"
+    ];
+
+    if (!empty($month)) {
+        $month_full = $months[$month];
+    }
+
+    if (!empty($add_month)) {
+        $add_month_full = $months[$add_month];
+    }
+
+    if (!empty($pre_due) && $pre_due > 0) {
+        $month_full = "Previous Year Due";
+    }
+
 
     //------------------------------------------------------
 
@@ -58,18 +82,20 @@ if (isset($_POST['submit'])) {
             $con->query($upadd);
             $add_month_full = $months[$add_month]; // "feb" => "February"
         }
+    } elseif (!empty($pre_due) && $pre_due > 0) {
+        $upd = "UPDATE fees SET PreviousYearAmount = '$pre_due' WHERE s_id = '$fid'";
     } else {
         $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
         $con->query($upd);
     }
-    
-                                    // echo "<pre>";
-                                    // print_r($_POST);
-                                    // print_r($_FILES);
-                                    // exit;
+
+    // echo "<pre>";
+    // print_r($_POST);
+    // print_r($_FILES);
+    // exit;
 
     if ($con->query($upd)) {
-    
+
         require "./fpdf/fpdf.php";
 
         class PDF_Rotate extends FPDF
@@ -118,8 +144,8 @@ if (isset($_POST['submit'])) {
         $pdf->SetFont('Arial', 'B', 14);
 
         $pdf->SetFont('Arial', '', '12');
-        $pdf->Cell(100, 10, 'SI No.: '.$rcpt_si_no, 0, 0, 'L');
-        $pdf->Cell(90, 10, 'Date : '.date("d-m-Y", strtotime($pay_date)), 0, 1, 'R');
+        $pdf->Cell(100, 10, 'SI No.: ' . $rcpt_si_no, 0, 0, 'L');
+        $pdf->Cell(90, 10, 'Date : ' . date("d-m-Y", strtotime($pay_date)), 0, 1, 'R');
 
         $pdf->Ln(8);
 
@@ -141,18 +167,18 @@ if (isset($_POST['submit'])) {
         $pdf->Ln(5);
 
         $pdf->SetFont('Arial', '', '13');
-        $pdf->Cell(130, 10, 'Name : '.$row['name'], 0, 1, 'L');
-        if(!empty($row['image'])){
-            $pdf->Image("../student_img/".$row['image'], 148, 82, 25, 30); // Student image
-        }else{
+        $pdf->Cell(130, 10, 'Name : ' . $row['name'], 0, 1, 'L');
+        if (!empty($row['image'])) {
+            $pdf->Image("../student_img/" . $row['image'], 148, 82, 25, 30); // Student image
+        } else {
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->Text(150, 97, 'Image not found');
         }
         $pdf->Rect(147, 81, 27, 32); // Rectangel 
         $pdf->SetFont('Arial', '', '13');
-        $pdf->Cell(95, 10, ''.$row['class'], 0, 1, 'L');
-        $pdf->Cell(120, 10, 'Guardian Name : '.$row['g_name'], 0, 1, 'L');
-        $pdf->Cell(190, 10, 'Mobile No. : '.$row['mobile_no'], 0, 1, 'L');
+        $pdf->Cell(95, 10, '' . $row['class'], 0, 1, 'L');
+        $pdf->Cell(120, 10, 'Guardian Name : ' . $row['g_name'], 0, 1, 'L');
+        $pdf->Cell(190, 10, 'Mobile No. : ' . $row['mobile_no'], 0, 1, 'L');
         $pdf->Ln(10);
 
 
@@ -162,22 +188,28 @@ if (isset($_POST['submit'])) {
         $pdf->Ln(5);
 
         $pdf->SetFont('Arial', '', '13');
-        $pdf->Cell(130, 10, 'Payment ID: '.$payment_id, 0, 1, 'L');
-        if(!empty($add_month) && $add_amount > 0){
-            $pdf->Cell(130, 10, 'Paid Month : '.$month_full, 0, 0, 'L');
-            $pdf->Cell(95, 10, 'Amount : '.$add_amount , 0, 1, 'L');
-            $pdf->Cell(130, 10, 'Additional Month : '.$add_month_full, 0, 0, 'L');
-            $pdf->Cell(95, 10, 'Amount : '.$amount, 0, 1, 'L');
+        $pdf->Cell(130, 10, 'Payment ID: ' . $payment_id, 0, 1, 'L');
+        if (!empty($add_month) && $add_amount > 0) {
+            $pdf->Cell(130, 10, 'Paid Month : ' . $month_full, 0, 0, 'L');
+            $pdf->Cell(95, 10, 'Amount : ' . $add_amount, 0, 1, 'L');
+            $pdf->Cell(130, 10, 'Additional Month : ' . $add_month_full, 0, 0, 'L');
+            $pdf->Cell(95, 10, 'Amount : ' . $amount, 0, 1, 'L');
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->Line(100, $pdf->GetY(), 200, $pdf->GetY()); // Normal Line
-            $totalamount = (int)$add_amount + (int)$amount;
-            $pdf->Cell(163, 10, 'Total Paid Amount : '.$totalamount, 0, 1, 'R');
-        }else{
-            $pdf->Cell(130, 10, 'Paid Month : '.$month_full, 0, 0, 'L');
-            $pdf->Cell(95, 10, 'Amount : '.$amount, 0, 1, 'L');
+            $totalamount = (int) $add_amount + (int) $amount;
+            $pdf->Cell(163, 10, 'Total Paid Amount : ' . $totalamount, 0, 1, 'R');
+        } elseif (!empty($pre_due) && $pre_due > 0) {
+            $pdf->Cell(130, 10, 'Paid Month : Previous Year Due', 0, 0, 'L');
+            $pdf->Cell(95, 10, 'Amount : ' . $pre_due, 0, 1, 'L');
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->Line(100, $pdf->GetY(), 200, $pdf->GetY()); // Normal Line
-            $pdf->Cell(163, 10, 'Total Paid Amount : '.$amount, 0, 1, 'R');
+            $pdf->Cell(163, 10, 'Total Paid Amount : ' . $pre_due, 0, 1, 'R');
+        } else {
+            $pdf->Cell(130, 10, 'Paid Month : ' . $month_full, 0, 0, 'L');
+            $pdf->Cell(95, 10, 'Amount : ' . $amount, 0, 1, 'L');
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Line(100, $pdf->GetY(), 200, $pdf->GetY()); // Normal Line
+            $pdf->Cell(163, 10, 'Total Paid Amount : ' . $amount, 0, 1, 'R');
         }
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -186,9 +218,9 @@ if (isset($_POST['submit'])) {
         $pdf->RotatedText(160, 230, 'Signature', 0);
         $pdf->RotatedText(135, 252, '- - - - - - - - - - - - - - - - - - - - - - - - - -', 0);
         $pdf->Image("mysign.jpeg", 13, 235, 55, 13); //authority sign 
-        if (!empty($fn) && file_exists($sign_path)){
+        if (!empty($fn) && file_exists($sign_path)) {
             $pdf->Image("$sign_path", 144, 235, 55, 14); // rcpt sign
-        }else{
+        } else {
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->Text(150, 245, 'Signature not available');
         }
@@ -198,22 +230,24 @@ if (isset($_POST['submit'])) {
 
         // --------- Receipt Save Settings ----------
         $student_name = preg_replace('/[^A-Za-z0-9 ]/', '', $row['name']); // safe filename
-        $receipt_filename = $month_full . " Receipt_".$student_name.".pdf";
+        $receipt_filename = $month_full . " Receipt_" . $student_name . ".pdf";
 
         $receipt_dir = __DIR__ . "/../Receipt_BKD/";
-            if (!is_dir($receipt_dir)) {
-                mkdir($receipt_dir, 0777, true);
+        if (!is_dir($receipt_dir)) {
+            mkdir($receipt_dir, 0777, true);
         }
 
-        $receipt_path = $receipt_dir.$receipt_filename;
-        $db_receipt_path = "Receipt_BKD/".$receipt_filename;
+        $receipt_path = $receipt_dir . $receipt_filename;
+        $db_receipt_path = "Receipt_BKD/" . $receipt_filename;
 
         // PDF ko folder me save karo
         $pdf->Output('F', $receipt_path);
 
         // Database me receipt ka record save karo
-        $upd_rcpt = "UPDATE receipt SET $month = '$db_receipt_path' WHERE s_id = '$sid'";
-        $con->query($upd_rcpt);
+        if (!empty($month) && $amount > 0 || !empty($add_month) && $add_amount > 0) {
+            $upd_rcpt = "UPDATE receipt SET $month = '$db_receipt_path' WHERE s_id = '$sid'";
+            $con->query($upd_rcpt);
+        }
 
         // Uploaded sign delete
         if (!empty($fn) && file_exists($sign_path)) {
@@ -229,7 +263,7 @@ if (isset($_POST['submit'])) {
         $pdf->Output();
 
 
-}
+    }
 
 }
 

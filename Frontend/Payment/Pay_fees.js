@@ -10,18 +10,17 @@ function toggleExtra() {
     }
 }
 
-function togglePre(){
-    let checkBox = document.getElementById("preDue");
-    let predueSection = document.getElementById("predueSection");
-    if(checkBox.checked){
-        predueSection.classList.remove("d-none");     // show
+function togglePre() {
+    let checkBox = document.getElementById("preDue")
+    let onlypayment = document.getElementById("OnlyPayment")
+    let predueSection = document.getElementById("predueSection")
+    if (checkBox.checked) {
+        predueSection.classList.remove("d-none");     
+        onlypayment.style.display = "none";
         predueSection.classList.add("d-flex", "justify-content-between", "align-items-center");
-    }else{
-        predueSection.classList.add("d-none");        // hide
+    } else {
+        predueSection.classList.add("d-none");        
+        onlypayment.style.display = "";
         predueSection.classList.remove("d-flex", "justify-content-between", "align-items-center");
     }
-}
-
-function toggleOnlyPre(){
-    let checkBox = document.getElementById("omlyPre")
 }
