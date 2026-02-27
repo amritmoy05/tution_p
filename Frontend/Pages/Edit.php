@@ -52,7 +52,7 @@ if ($res && $res->num_rows > 0) {
                 </div>
                 <div class="mb-3">
                     <label for="stgaurdian" class="form-lebel">Guardian Name :</label>
-                    <input type="text" name="stguardian" id="" class="form-control" value="<?=$row['g_name'] ?>" required>
+                    <input type="text" name="stguardian" id="" class="form-control" value="<?=$row['g_name'] ?>" >
                 </div>
                 <div class="mb-3">
                     <label for="stgaurdian" class="form-lebel">Address :</label>
@@ -61,11 +61,11 @@ if ($res && $res->num_rows > 0) {
                 <div class="mb-3">
                     <label for="gender" class="form-label">Gender :</label><br>
                     <div class="form-check form-check-inline">
-                        <input type="radio" name="stgender" id="male" class="form-check-input" <?php if($row['gender']=='male'){echo "checked";} ?> value="male" value="male">
+                        <input type="radio" name="stgender" id="male" class="form-check-input" <?php if($row['gender']=='Male'){echo "checked";} ?> value="Male">
                         <label for="Male" class="form-check-label">Male</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input type="radio" name="stgender" id="female" class="form-check-input" <?php if($row['gender']=='female'){echo "checked";} ?> value="male" value="female">
+                        <input type="radio" name="stgender" id="female" class="form-check-input" <?php if($row['gender']=='Female'){echo "checked";} ?> value="Female">
                         <label for="Female" class="form-check-label">Female</label>
                     </div>
                 </div>

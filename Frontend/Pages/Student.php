@@ -29,6 +29,7 @@ if (!defined('ALLOWED_ACCESS')) {
                     <th>Si No</th>
                     <th>Profile</th>
                     <th>Name</th>
+                    <th>Gender</th>
                     <th>Guardian Name</th>
                     <th>Class</th>
                     <th>Mobile</th>
@@ -57,6 +58,7 @@ if (!defined('ALLOWED_ACCESS')) {
                             <?php } ?>
                         </td>
                         <td><?= $row['name'] ?></td>
+                        <td><?= $row['gender'] ?></td>
                         <td><?= $row['g_name'] ?></td>
                         <td><?= $row['class'] ?></td>
                         <td><?= $row['mobile_no'] ?></td>

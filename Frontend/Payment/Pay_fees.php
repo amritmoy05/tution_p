@@ -62,7 +62,7 @@ if (isset($_GET['fid']) && isset($_GET['sid'])) {
 
             <h2 style="text-align: center; font-family: Arial, sans-serif; ">TUTION FEES RECEIPT</h2>
 
-            <form action="/tution_p/Backend/Pay_fees_BKD.php" method="post" enctype="multipart/form-data">
+            <form action="/tution_p/Backend/Pay_fees_BKD.php" method="post" enctype="multipart/form-data" target="blank">
 
                 <input type="hidden" name="fid" id="" value="<?= $row['fid'] ?>"> <!-- Hidden input passing -->
                 <input type="hidden" name="sid" id="" value="<?= $row['sid'] ?>"> <!-- Hidden input passing -->

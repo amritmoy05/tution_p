@@ -34,7 +34,7 @@ if (!defined('ALLOWED_ACCESS')) {
                 </div>
                 <div class="mb-3">
                     <label for="stgaurdian" class="form-lebel">Guardian Name :</label>
-                    <input type="text" name="stguardian" id="" class="form-control" required>
+                    <input type="text" name="stguardian" id="" class="form-control">
                 </div>
                 <div class="mb-3">
                     <label for="stgaurdian" class="form-lebel">Address :</label>
@@ -43,11 +43,11 @@ if (!defined('ALLOWED_ACCESS')) {
                 <div class="mb-3">
                     <label for="gender" class="form-label">Gender :</label><br>
                     <div class="form-check form-check-inline">
-                        <input type="radio" name="stgender" id="male" class="form-check-input" value="male">
+                        <input type="radio" name="stgender" id="male" class="form-check-input" value="Male">
                         <label for="Male" class="form-check-label">Male</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input type="radio" name="stgender" id="female" class="form-check-input" value="female">
+                        <input type="radio" name="stgender" id="female" class="form-check-input" value="Female">
                         <label for="Female" class="form-check-label">Female</label>
                     </div>
                 </div>

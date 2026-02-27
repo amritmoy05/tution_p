@@ -23,12 +23,16 @@ if (isset($_POST['submit'])) {
 
     //student and receipt details fetch -------------------------------
     $sel1 = "SELECT * FROM student WHERE s_id='$sid'"; // student table sel query
-    $sel2 = "SELECT rcpt_id,rcpt_no FROM receipt WHERE s_id = '$sid'"; // receipt table sel query   
+    $sel2 = "SELECT rcpt_id,rcpt_no FROM receipt WHERE s_id = '$sid'"; // receipt table sel query
+    $sel3 = "SELECT * FROM fees WHERE s_id = '$sid'" ;
     $res = $con->query($sel1);
     $res2 = $con->query($sel2);
+    $res3 = $con->query($sel3);
     if ($res && $res2 && $res->num_rows > 0) {
         $row = $res->fetch_assoc();   // student table data 
         $row2 = $res2->fetch_assoc(); // receipt table data
+        $row3 = $res3->fetch_assoc(); // fees table data 
+        $mainmonth_amount = $row3[$month];
         $rcpt_si_no = $row2['rcpt_no'] + 1;
         $con->query("UPDATE receipt SET rcpt_no  = $rcpt_si_no");
         // print_r($row); // debug ke liye
@@ -64,7 +68,7 @@ if (isset($_POST['submit'])) {
     }
 
     if (!empty($pre_due) && $pre_due > 0) {
-        $month_full = "Previous Year Due";
+        $month_full = "PreviousYearDue";
     }
 
 
@@ -72,12 +76,12 @@ if (isset($_POST['submit'])) {
 
     if ($add_amount > 0 && !empty($add_month)) {
         if ($month === $add_month) {
-            $upd = "UPDATE fees SET $month = '$amount' + '$add_amount' WHERE s_id='$fid'";
-            $con->query($upd);
+            $upd = "UPDATE fees SET $month = '$amount' +'$mainmonth_amount'+'$add_amount' WHERE s_id='$fid'";
+            // $con->query($upd);
             $add_month_full = $months[$add_month]; // "feb" => "February"
         } else {
-            $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
-            $con->query($upd);
+            $upd = "UPDATE fees SET $month = '$amount'+'$mainmonth_amount' WHERE s_id='$fid'";
+            // $con->query($upd);
             $upadd = "UPDATE fees SET $add_month = '$add_amount' WHERE s_id = '$fid'";
             $con->query($upadd);
             $add_month_full = $months[$add_month]; // "feb" => "February"
@@ -85,8 +89,8 @@ if (isset($_POST['submit'])) {
     } elseif (!empty($pre_due) && $pre_due > 0) {
         $upd = "UPDATE fees SET PreviousYearAmount = '$pre_due' WHERE s_id = '$fid'";
     } else {
-        $upd = "UPDATE fees SET $month = '$amount' WHERE s_id='$fid'";
-        $con->query($upd);
+        $upd = "UPDATE fees SET $month = '$amount'+'$mainmonth_amount' WHERE s_id='$fid'";
+        // $con->query($upd);
     }
 
     // echo "<pre>";
@@ -256,11 +260,6 @@ if (isset($_POST['submit'])) {
 
         // Optional: browser me bhi open karna ho to
         $pdf->Output('I', $receipt_filename);
-
-
-
-
-        $pdf->Output();
 
 
     }
