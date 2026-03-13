@@ -62,7 +62,8 @@ if (isset($_GET['fid']) && isset($_GET['sid'])) {
 
             <h2 style="text-align: center; font-family: Arial, sans-serif; ">TUTION FEES RECEIPT</h2>
 
-            <form action="/tution_p/Backend/Pay_fees_BKD.php" method="post" enctype="multipart/form-data" target="blank">
+            <form action="/tution_p/Backend/Pay_fees_BKD.php" method="post" enctype="multipart/form-data"
+                target="blank">
 
                 <input type="hidden" name="fid" id="" value="<?= $row['fid'] ?>"> <!-- Hidden input passing -->
                 <input type="hidden" name="sid" id="" value="<?= $row['sid'] ?>"> <!-- Hidden input passing -->
@@ -121,14 +122,29 @@ if (isset($_GET['fid']) && isset($_GET['sid'])) {
                     </div>
                 </div>
                 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
-                <!-- Hidden Section (show only if checkbox checked) -->
-
-                <div class="form-check mb-3">
+                <!-- Previous year due only checkbox -->
+                <div class="form-check mb-3" id="preDueBox">
                     <input class="form-check-input" type="checkbox" id="preDue" onclick="togglePre()">
                     <label class="form-check-label" for="preDue">
                         Previous year Due only
                     </label>
                 </div>
+
+                <div class="form-check mb-3" id="preDueMainBox">
+                    <input class="form-check-input" type="checkbox" id="PreDueMainCheck" onclick="togglePreMonth()">
+                    <label class="form-check-label" for="PreDueMainCheck">
+                        Previous year Due + Main Month
+                    </label>
+                </div>
+
+                <div class="form-check mb-3" id="addMore" style=""> <!-- Addition payment checkbox -->
+                    <input class="form-check-input" type="checkbox" id="addMoreCheck" onclick="toggleExtra()">
+                    <label class="form-check-label" for="addMore">
+                        Add Additional Month Payment
+                    </label>
+                </div>
+
+                <!-- Hidden Section (show only if checkbox checked) -->
                 <!-- Previous year due only -->
                 <div id="predueSection" style="display:none;">
                     <div class="mb-3">
@@ -138,13 +154,15 @@ if (isset($_GET['fid']) && isset($_GET['sid'])) {
                 </div>
                 <!-- Previous year due only -->
 
-
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="addMore" onclick="toggleExtra()">
-                    <label class="form-check-label" for="addMore">
-                        Add Additional Month Payment
-                    </label>
+                <!-- Previous year + Running month -->
+                <div id="PreDueMain" style="display:none;">
+                    <div class="mb-3">
+                        <h5>Enter Previous year Amount :</h5>
+                        <input type="number" name="PreYearAmount" class="form-control w-75">
+                    </div>
                 </div>
+                <!-- Previous year + Running month -->
+
                 <!-- Hidden Section (show only if checkbox checked) -->
                 <div id="extraSection" style="display:none;">
                     <div class="mb-3">
