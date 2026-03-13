@@ -1,26 +1,30 @@
-function toggleExtra() {
-    let checkBox = document.getElementById("addMore");
-    let extraSection = document.getElementById("extraSection");
-    if (checkBox.checked) {
-        extraSection.classList.remove("d-none");     // show
-        extraSection.classList.add("d-flex", "justify-content-between", "align-items-center");
-    } else {
-        extraSection.classList.add("d-none");        // hide
-        extraSection.classList.remove("d-flex", "justify-content-between", "align-items-center");
+const $ = id => document.getElementById(id);
+const show = (id, v) => $(id).style.display = v;
+
+function toggleExtra(){
+    show("extraSection", $("addMoreCheck").checked ? "flex" : "none");
+}
+
+function togglePre(){
+    const c = $("preDue").checked;
+
+    show("predueSection", c ? "flex" : "none");
+    show("addMore", c ? "none" : "");
+    show("preDueMainBox", c ? "none" : "");
+    show("OnlyPayment", c ? "none" : "");
+
+    if(c){
+        $("addMoreCheck").checked = false;
+        $("PreDueMainCheck").checked = false;
+        show("extraSection","none");
+        show("PreDueMain","none");
     }
 }
 
-function togglePre() {
-    let checkBox = document.getElementById("preDue")
-    let onlypayment = document.getElementById("OnlyPayment")
-    let predueSection = document.getElementById("predueSection")
-    if (checkBox.checked) {
-        predueSection.classList.remove("d-none");     
-        onlypayment.style.display = "none";
-        predueSection.classList.add("d-flex", "justify-content-between", "align-items-center");
-    } else {
-        predueSection.classList.add("d-none");        
-        onlypayment.style.display = "";
-        predueSection.classList.remove("d-flex", "justify-content-between", "align-items-center");
-    }
+function togglePreMonth(){
+    const c = $("PreDueMainCheck").checked;
+
+    show("addMore", c ? "none" : "");
+    show("preDueBox", c ? "none" : "");
+    show("PreDueMain", c ? "flex" : "none");
 }
